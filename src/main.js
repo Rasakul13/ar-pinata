@@ -3,7 +3,14 @@ import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createBabyOctopus } from './baby-octopus.js';
 
-const MODEL_URL = new URL('../pinata.glb', import.meta.url).href;
+const buildId = typeof window.AR_PINATA_ENV?.BUILD_ID === 'string'
+  ? window.AR_PINATA_ENV.BUILD_ID
+  : '';
+const modelURL = new URL('../pinata.glb', import.meta.url);
+if (buildId) {
+  modelURL.searchParams.set('v', buildId);
+}
+const MODEL_URL = modelURL.href;
 const PINATA_HEIGHT_METERS = 0.72;
 const PINATA_DISTANCE_METERS = 1.55;
 const PINATA_ARENA_RADIUS_METERS = 5;

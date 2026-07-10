@@ -27,6 +27,25 @@ FINAL_EFFECT_THEME=pink
 
 Then run `npm run build`. The finished deployable application is written to `dist/`. Each build creates a content-versioned theme configuration, so changing the theme cannot reuse an older cached configuration file. There is intentionally no runtime color switch or URL override.
 
+## GitHub Pages deployment
+
+The `Deploy GitHub Pages` workflow is the only publishing path. On every push to `main` it:
+
+1. deletes and recreates `dist/` from the committed sources and `.env`;
+2. versions the JavaScript, CSS, octopus import, model, and theme configuration with one build ID;
+3. publishes only the generated `dist/` artifact;
+4. checks the live `version.json` until build ID, commit, theme, and required hit count exactly match the pushed build.
+
+Configure the repository once under **Settings > Pages > Build and deployment > Source** and select **GitHub Actions**. Publishing directly from the `main` branch is intentionally unsupported because a branch deployment cannot evaluate `.env` through the build script.
+
+The active deployment can be inspected at:
+
+```text
+https://rasakul13.github.io/ar-pinata/version.json
+```
+
+A successful workflow guarantees that this file reports the deployed commit, selected `blue` or `pink` theme, and `hitsToExplode: 4`. If GitHub Pages serves an older or branch-based version, the final workflow verification fails with a specific configuration message instead of reporting a misleading successful deployment.
+
 ## Run locally
 
 ```sh
@@ -62,6 +81,7 @@ Open the HTTPS forwarding URL on the phone.
 - `index.html` defines the static page and Three.js import map.
 - `.env` selects the build-time `blue` or `pink` final-effect theme.
 - `scripts/build.js` validates `.env` and produces the cache-versioned application in `dist/`.
+- `scripts/verify-deployment.js` confirms that GitHub Pages serves the exact artifact created for the latest push.
 - `styles.css` handles the fullscreen AR/camera overlay and themeable farewell text.
 - `src/main.js` loads the GLB model, starts WebXR AR, handles pinata taps, confetti, synthesized hit/explosion sounds, and the final reveal.
 - `src/baby-octopus.js` builds and animates the original, primitive-based baby octopus shown after the explosion.

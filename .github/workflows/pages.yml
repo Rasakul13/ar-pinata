@@ -13,11 +13,16 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build_id: ${{ steps.metadata.outputs.build_id }}
+      theme: ${{ steps.metadata.outputs.theme }}
+      hits: ${{ steps.metadata.outputs.hits }}
+      commit: ${{ steps.metadata.outputs.commit }}
 
     steps:
       - name: Checkout repository
@@ -34,9 +39,27 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          BUILD_COMMIT: ${{ github.sha }}
+
+      - name: Read and validate build metadata
+        id: metadata
+        shell: bash
+        run: |
+          node -e '
+            const fs = require("fs");
+            const metadata = JSON.parse(fs.readFileSync("dist/version.json", "utf8"));
+            if (!metadata.buildId || !metadata.commit || !metadata.theme || metadata.hitsToExplode !== 4) {
+              throw new Error(`Invalid build metadata: ${JSON.stringify(metadata)}`);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `build_id=${metadata.buildId}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `theme=${metadata.theme}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `hits=${metadata.hitsToExplode}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `commit=${metadata.commit}\n`);
+          '
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
@@ -51,6 +74,18 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout verification script
+        uses: actions/checkout@v6
+
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify newest build is live
+        run: >-
+          node scripts/verify-deployment.js
+          "${{ steps.deployment.outputs.page_url }}"
+          "${{ needs.build.outputs.build_id }}"
+          "${{ needs.build.outputs.commit }}"
+          "${{ needs.build.outputs.theme }}"
+          "${{ needs.build.outputs.hits }}"
