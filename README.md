@@ -6,9 +6,9 @@ A static browser AR pinata experience using WebXR where available and a camera o
 
 - AR content remains hidden until the user presses `Start AR` and the immersive session is ready.
 - In WebXR, the pinata starts at a random point within a 5 meter radius of the current user spot. Camera-overlay placement uses a tighter visible range so the target remains large enough to hit.
-- Hits 1 through 5 play a hit sound, spawn a generous confetti burst, and move the pinata to a new random spot with a jump animation.
+- Hits 1 through 3 play a hit sound, spawn a generous confetti burst, and move the pinata to a new random spot with a jump animation.
 - The pinata keeps doing small jumps and gentle wander moves between hits. Its gaze drifts smoothly within a 60-degree cone toward the user, with an occasional sideways tilt.
-- Hit 6 plays the explosion sound, spawns a large confetti burst, hides the pinata, shows `See you soon little one!`, starts dense confetti rain, and reveals a smiling baby octopus.
+- Hit 4 plays the explosion sound, spawns a large confetti burst, hides the pinata, shows `See you soon little one!`, starts dense confetti rain, and reveals a smiling baby octopus.
 - The build-time theme switches the text, octopus, and rain together between baby blue and baby pink.
 
 ## Final-effect theme
@@ -45,11 +45,9 @@ The same GitHub Pages link automatically selects the best browser mode:
 - Safari on iPhone and iPad uses the camera-overlay version because Safari does not expose the required immersive WebXR session.
 - Other browsers without immersive WebXR also use the camera overlay when camera access is available.
 
-Both modes use the same six-hit game, movement, sounds, confetti, final text, theme, and baby octopus. In camera-overlay mode, the 3D scene is composited over the rear camera image and does not have ARKit/WebXR world tracking. No app installation, TestFlight account, or Apple Developer membership is required.
+Both modes use the same four-hit game, movement, sounds, confetti, final text, theme, and baby octopus. In camera-overlay mode, the 3D scene is composited over the rear camera image and does not have ARKit/WebXR world tracking. No app installation, TestFlight account, or Apple Developer membership is required.
 
 The pinata and camera remain hidden until the user presses `Start AR`. Camera access requires HTTPS on a phone; GitHub Pages already provides HTTPS.
-
-The repository still contains the earlier native ARKit prototype under `ios/`, but the deployed website does not redirect to or require it.
 
 To test from a phone through ngrok:
 

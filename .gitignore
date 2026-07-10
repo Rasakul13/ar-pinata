@@ -3,8 +3,3 @@ dist/
 
 # macOS metadata
 .DS_Store
-
-# Xcode user and build output
-**/xcuserdata/
-*.xcuserstate
-DerivedData/

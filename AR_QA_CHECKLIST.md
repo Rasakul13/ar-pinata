@@ -5,9 +5,9 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - Keep all pinata, confetti, message-sprite, and octopus rendering hidden until the user presses `Start AR` and the immersive session starts.
 - Load the pinata in an AR camera view.
 - After AR starts, place the pinata at a random reachable spot within a 5m radius of the user's current spot.
-- Hits 1 through 5 emit a generous confetti burst and hit sound, then move the pinata to a new random spot with a readable transition animation.
+- Hits 1 through 3 emit a generous confetti burst and hit sound, then move the pinata to a new random spot with a readable transition animation.
 - While active, the pinata keeps doing small jumps and slow position changes so the target is harder to hit, and varies its facing within a 60-degree cone toward the player.
-- Hit 6 plays an explosion sound, emits lots of confetti, removes or explodes the pinata, shows the selected baby-blue or baby-pink text: `See you soon little one!`, starts dense matching confetti rain, and reveals a matching smiling baby octopus.
+- Hit 4 plays an explosion sound, emits lots of confetti, removes or explodes the pinata, shows the selected baby-blue or baby-pink text: `See you soon little one!`, starts dense matching confetti rain, and reveals a matching smiling baby octopus.
 
 ## Current Workspace Snapshot
 
@@ -67,9 +67,9 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - Fast repeated taps are debounced enough to preserve the exact sequence, especially around relocation start/end.
 - Raycasts during jump/drift use the current world transform, not the previous frame's stale position.
 - Hits cannot be counted while the pinata is hidden, exploding, or in a non-interactive relocation phase.
-- Hits 1 through 5 trigger confetti plus hit sound and exactly one relocation.
-- Hit 6 triggers explosion sound, large confetti, final message, and disables further hit counting.
-- Hit 7 or later cannot retrigger the explosion or replay the final sequence.
+- Hits 1 through 3 trigger confetti plus hit sound and exactly one relocation.
+- Hit 4 triggers explosion sound, large confetti, final message, and disables further hit counting.
+- Hit 5 or later cannot retrigger the explosion or replay the final sequence.
 
 ## Audio Checks
 
@@ -83,7 +83,7 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 
 - Small confetti bursts originate near the pinata and clean themselves up after a short lifetime.
 - Explosion confetti is visibly larger than hit confetti and does not degrade frame rate badly on mobile.
-- The pinata is hidden, removed, or visibly exploded on the sixth successful hit.
+- The pinata is hidden, removed, or visibly exploded on the fourth successful hit.
 - Final text is exactly `See you soon little one!`.
 - Final text matches the selected baby-blue or baby-pink theme, remains readable over the AR/camera/fallback background, and fits on narrow mobile screens.
 - Final text appears after the explosion sequence and remains visible.
@@ -104,7 +104,7 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 
 - Build/lint command passes once a package exists.
 - Asset smoke test verifies deployed URLs return 200 for `pinata.glb` and any external audio/confetti assets if added.
-- Unit test covers the tap state machine: `0 -> 1 -> ... -> 5 -> exploded on 6`, then ignores additional taps.
+- Unit test covers the tap state machine: `0 -> 1 -> 2 -> 3 -> exploded on 4`, then ignores additional taps.
 - Unit test covers relocation locking: a second tap during a non-interactive relocation window cannot add an extra hit.
 - Unit test covers random placement bounds: generated positions are within 5m, not too near, and not behind the active camera.
 - Unit test covers raycast hit filtering: pinata hit counts, background miss does not.
