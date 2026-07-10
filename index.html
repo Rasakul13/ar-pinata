@@ -7,6 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>AR Pinata</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="./styles.css">
     <script type="importmap">
       {
@@ -22,14 +23,9 @@
       <video id="camera-feed" autoplay muted playsinline></video>
       <div id="scene-root"></div>
       <div id="overlay">
-        <section id="ios-native-notice" aria-live="polite">
-          <h1>Native iOS-App erforderlich</h1>
-          <p>Für echtes AR auf iPhone und iPad muss die native ARKit-App installiert sein.</p>
-          <p id="ios-app-help">Noch keine installierbare iOS-Version verfügbar. Installiere die App zunächst über Xcode oder TestFlight.</p>
-          <a id="ios-app-link" hidden>iOS AR öffnen</a>
-        </section>
         <div id="status" aria-live="polite"></div>
         <div id="farewell" aria-live="polite">See you soon little one!</div>
+        <button id="fallback-start-button" type="button" hidden>Start AR</button>
         <button id="reset-button" type="button">Reset</button>
       </div>
     </main>

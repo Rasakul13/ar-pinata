@@ -12,14 +12,14 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 ## Current Workspace Snapshot
 
 - `pinata.glb` is the model asset.
-- `index.html`, `styles.css`, and `src/main.js` implement a static WebXR app with an unsupported-device camera background.
+- `index.html`, `styles.css`, and `src/main.js` implement a WebXR game with a playable camera-overlay mode for iOS and other browsers without immersive WebXR.
 - `package.json` provides local serve and syntax-check scripts.
 
 ## Release Blockers To Check First
 
 - The app is served from HTTPS or `localhost`; WebXR must not be expected to work from `file://` or plain HTTP.
 - The app runtime detects `navigator.xr` and calls `navigator.xr.isSessionSupported("immersive-ar")` before showing an AR start path.
-- Unsupported, denied, or rejected AR startup states remain recoverable and never reveal interactive AR content.
+- Unsupported, denied, or rejected AR startup states remain recoverable. Interactive content stays hidden until either WebXR starts or the camera overlay receives permission.
 - Hosted assets use relative URLs and fetch successfully from the deployed origin: `pinata.glb` and any external audio/confetti assets if added.
 - If embedded in an iframe, the parent allows `xr-spatial-tracking`, `camera` if using a camera fallback, and `autoplay` if sound is needed.
 
@@ -32,33 +32,23 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - Test on a real target mobile AR device/browser; desktop emulation can only validate fallback rendering and state logic.
 - iOS handheld browsers should be treated as fallback unless `immersive-ar` is confirmed at runtime on the exact target browser/device.
 - Camera permission denied, unavailable AR runtime, unsupported browser, and interrupted session all leave the page recoverable.
-- iPhone/iPad without `immersive-ar` never starts the camera-overlay game and instead shows the native iOS app route.
-
-## Native iOS Checks
-
-- `ios/ARPinataIOS/ARPinataIOS.xcodeproj` builds with the full Xcode application for an iOS 17 or newer target.
-- Xcode generates the native final-effect theme from the same repository `.env` used by the web build.
-- ARKit world tracking begins only after the native `Start AR` action and requests camera permission with a clear purpose string.
-- The pinata is fixed in AR world coordinates while idle and moves between reachable positions in front of the current device pose.
-- Exactly six successful entity hits trigger the final explosion; misses and rapid duplicate taps do not count.
-- The native explosion reveals matching theme-colored text, dense rain, and the animated baby octopus.
-- Reset removes native particle systems and final entities before starting a fresh six-hit round.
-- The `arpinata://start` route launches the installed app from the iOS-specific GitHub Pages prompt.
+- iPhone/iPad without `immersive-ar` shows the camera-overlay `Start AR` control and starts the complete game after camera permission is granted.
+- The overlay flow never redirects to a custom URL, TestFlight, or an installed application.
 
 ## Model And AR Placement
 
 - `pinata.glb` loads once without console errors and appears at a believable scale.
-- Initial AR placement is random but constrained within 5m of the user's current spot or the chosen local anchor.
+- Initial WebXR placement is random but constrained within 5m of the user's current spot. Camera-overlay placement stays within its tighter visible range.
 - The random spot is not behind the camera, too close to the user, inside the camera near plane, below the detected floor, or so far to the side that it is effectively unreachable.
 - Repositioning after a hit keeps the next spot within the 5m radius and preserves believable scale and camera-facing orientation.
-- The model remains stable as the user moves the phone; it does not follow the camera unintentionally after placement or while relocating.
+- In WebXR mode, the model remains stable in world space as the user moves the phone. Camera-overlay placement is intentionally screen-relative because it has no world tracking.
 - The app handles slow model loading with a visible loading state.
 - GLB load failure shows a user-visible error and does not break fallback controls.
 
 ## Movement And Difficulty Checks
 
 - Each successful non-final hit starts one relocation animation, and the next target position is different enough to be noticeable.
-- Hit-triggered relocations take about 1.2 seconds, keeping the response playful without snapping too quickly.
+- Hit-triggered relocations take about 1.5 seconds, keeping the response playful without snapping too quickly.
 - Relocation has a clear animated path or easing and does not teleport through the camera.
 - Ongoing jump and drift are subtle enough to stay hittable but visible enough to raise difficulty.
 - Idle wander moves take about 2.4–3.3 seconds, rest for 1.2–2 seconds, and do not feel frantic.
@@ -102,12 +92,13 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - The compact smiling baby octopus appears only after the pinata disappears, enters smoothly below the final text, faces the viewer independently of the pinata's last tilt, and gently animates all eight tentacles.
 - The baby octopus and its animation are hidden and returned to their initial state on reset.
 
-## Unsupported-device Behavior
+## Camera-overlay Behavior
 
-- If WebXR AR is unavailable, no pinata, confetti, octopus, or 3D final text is rendered.
-- A permitted camera background may still appear, but it never starts the game without an immersive AR session.
-- If camera permission is denied, the page remains stable and the AR content stays hidden.
-- Unsupported devices get concise, visible status text and no uncaught errors.
+- If WebXR AR is unavailable, a `Start AR` button is displayed without rendering the pinata behind it.
+- Pressing the button requests the rear camera from the same user gesture and activates the complete game only after permission succeeds.
+- The camera video stays behind the transparent Three.js canvas while the pinata, confetti, final text, and octopus render above it.
+- If camera permission is denied, the page remains stable, AR content stays hidden, and the start button remains available for a retry.
+- Unsupported or insecure contexts get concise, visible status text and no uncaught errors.
 
 ## Suggested Automated Checks
 
@@ -117,7 +108,7 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - Unit test covers relocation locking: a second tap during a non-interactive relocation window cannot add an extra hit.
 - Unit test covers random placement bounds: generated positions are within 5m, not too near, and not behind the active camera.
 - Unit test covers raycast hit filtering: pinata hit counts, background miss does not.
-- Browser test mocks missing `navigator.xr` and verifies all AR scene content stays hidden.
+- Browser test mocks missing `navigator.xr`, verifies the overlay start control, and confirms content stays hidden before permission and becomes interactive afterward.
 
 ## Reference Notes Checked On 2026-07-09
 

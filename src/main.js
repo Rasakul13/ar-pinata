@@ -7,6 +7,7 @@ const MODEL_URL = new URL('../pinata.glb', import.meta.url).href;
 const PINATA_HEIGHT_METERS = 0.72;
 const PINATA_DISTANCE_METERS = 1.55;
 const PINATA_ARENA_RADIUS_METERS = 5;
+const PINATA_FALLBACK_MAX_DISTANCE_METERS = 2.15;
 const PINATA_MIN_DISTANCE_METERS = 1.15;
 const PINATA_FALLBACK_ARC_RADIANS = THREE.MathUtils.degToRad(28);
 const PINATA_HIT_RADIUS_METERS = 0.62;
@@ -43,10 +44,8 @@ const overlay = document.querySelector('#overlay');
 const cameraFeed = document.querySelector('#camera-feed');
 const finalMessage = document.querySelector('#farewell');
 const resetButton = document.querySelector('#reset-button');
+const fallbackStartButton = document.querySelector('#fallback-start-button');
 const statusEl = document.querySelector('#status');
-const iosNativeNotice = document.querySelector('#ios-native-notice');
-const iosAppLink = document.querySelector('#ios-app-link');
-const iosAppHelp = document.querySelector('#ios-app-help');
 
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
@@ -166,10 +165,25 @@ pinataRoot.add(groundRing);
 setFinalEffectTheme(finalEffectThemeName);
 setStatus('Loading assets..');
 loadPinata();
-installArButton();
 installEventHandlers();
-setupFallbackCameraIfNeeded();
+initializeARMode();
 renderer.setAnimationLoop(render);
+
+async function initializeARMode() {
+  if (window.isSecureContext && navigator.xr) {
+    try {
+      if (await navigator.xr.isSessionSupported('immersive-ar')) {
+        installArButton();
+        document.body.dataset.arMode = 'webxr';
+        return;
+      }
+    } catch (error) {
+      console.warn('WebXR support could not be determined. Using camera overlay.', error);
+    }
+  }
+
+  showFallbackStartButton();
+}
 
 function installArButton() {
   if (!window.isSecureContext || !navigator.xr) {
@@ -207,17 +221,26 @@ function installEventHandlers() {
   window.addEventListener('pointerdown', handlePointerDown, { passive: false });
   window.addEventListener('contextmenu', (event) => event.preventDefault());
 
-  [resetButton].filter(Boolean).forEach((control) => {
+  [resetButton, fallbackStartButton].filter(Boolean).forEach((control) => {
     control.addEventListener('beforexrselect', (event) => event.preventDefault());
+    control.addEventListener('pointerdown', (event) => event.stopPropagation());
   });
 
   if (resetButton) {
-    resetButton.addEventListener('pointerdown', (event) => event.stopPropagation());
     resetButton.addEventListener('click', (event) => {
       event.stopPropagation();
       resetExperience();
     });
   }
+
+  if (fallbackStartButton) {
+    fallbackStartButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      startFallbackCamera();
+    });
+  }
+
+  window.addEventListener('pagehide', stopFallbackCamera);
 }
 
 function getInitialFinalEffectTheme() {
@@ -344,73 +367,30 @@ function makeGroundRing() {
   return ring;
 }
 
-function setupFallbackCameraIfNeeded() {
-  if (!navigator.xr || !window.isSecureContext) {
-    if (isIOSDevice()) {
-      showIOSNativeOption();
-    } else {
-      startFallbackCamera();
-    }
-    return;
+function showFallbackStartButton() {
+  document.body.dataset.arMode = 'camera-overlay';
+  if (fallbackStartButton) {
+    fallbackStartButton.hidden = false;
   }
-
-  navigator.xr.isSessionSupported('immersive-ar')
-    .then((supported) => {
-      if (!supported) {
-        if (isIOSDevice()) {
-          showIOSNativeOption();
-        } else {
-          startFallbackCamera();
-        }
-      }
-    })
-    .catch(() => {
-      if (isIOSDevice()) {
-        showIOSNativeOption();
-      } else {
-        startFallbackCamera();
-      }
-    });
-}
-
-function isIOSDevice() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent)
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
-function showIOSNativeOption() {
-  const configuredURL = window.AR_PINATA_ENV?.IOS_APP_URL;
-  const appURL = typeof configuredURL === 'string' ? configuredURL.trim() : '';
-  if (!iosAppLink || !iosNativeNotice) {
-    setStatus('Open the native AR Pinata iOS app on this device.');
-    return;
-  }
-
-  if (appURL) {
-    iosAppLink.href = appURL;
-    iosAppLink.hidden = false;
-    iosAppLink.textContent = appURL.startsWith('https://testflight.apple.com/')
-      ? 'iOS AR über TestFlight installieren'
-      : 'iOS AR öffnen';
-    if (iosAppHelp) {
-      iosAppHelp.hidden = true;
-    }
-  } else {
-    iosAppLink.removeAttribute('href');
-    iosAppLink.hidden = true;
-    if (iosAppHelp) {
-      iosAppHelp.hidden = false;
-    }
-  }
-
-  iosNativeNotice.classList.add('visible');
-  setStatus('');
 }
 
 async function startFallbackCamera() {
-  if (!navigator.mediaDevices?.getUserMedia || cameraFeed.srcObject) {
+  if (arExperienceActive && cameraFeed.srcObject) {
     return;
   }
+
+  if (!window.isSecureContext) {
+    setStatus('Camera AR requires an HTTPS connection.');
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setStatus('This browser cannot access the camera.');
+    return;
+  }
+
+  fallbackStartButton?.setAttribute('disabled', '');
+  setStatus('Starting camera..');
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -422,9 +402,21 @@ async function startFallbackCamera() {
       },
     });
     cameraFeed.srcObject = stream;
+    await cameraFeed.play();
     document.body.classList.add('fallback-camera');
-  } catch {
+    overlay.classList.add('capture');
+    arExperienceActive = true;
+    arContent.visible = true;
+    placePinataAroundCurrentSpot(true);
+    fallbackStartButton.hidden = true;
+    setStatus('');
+  } catch (error) {
+    console.error('Camera overlay could not be started.', error);
+    stopFallbackCamera();
     document.body.classList.remove('fallback-camera');
+    setStatus('Camera access failed. Allow camera access in the browser settings and try again.');
+  } finally {
+    fallbackStartButton?.removeAttribute('disabled');
   }
 }
 
@@ -438,6 +430,12 @@ function stopFallbackCamera() {
   }
   cameraFeed.srcObject = null;
   document.body.classList.remove('fallback-camera');
+
+  if (!renderer.xr.isPresenting) {
+    arExperienceActive = false;
+    arContent.visible = false;
+    overlay.classList.remove('capture');
+  }
 }
 
 function handleResize() {
@@ -927,8 +925,11 @@ function getRandomArenaPosition({ minDistance, maxDistance, avoidCurrent }) {
 
   const forwardAngle = Math.atan2(tmpCameraDirection.z, tmpCameraDirection.x);
   const angleSpread = renderer.xr.isPresenting ? Math.PI * 2 : PINATA_FALLBACK_ARC_RADIANS;
+  const constrainedMaxDistance = renderer.xr.isPresenting
+    ? maxDistance
+    : Math.min(maxDistance, PINATA_FALLBACK_MAX_DISTANCE_METERS);
   const minDistanceSq = minDistance * minDistance;
-  const maxDistanceSq = maxDistance * maxDistance;
+  const maxDistanceSq = constrainedMaxDistance * constrainedMaxDistance;
 
   for (let attempt = 0; attempt < 12; attempt += 1) {
     const angle = forwardAngle + THREE.MathUtils.randFloatSpread(angleSpread);

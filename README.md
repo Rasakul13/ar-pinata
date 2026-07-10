@@ -1,11 +1,11 @@
 # AR Pinata
 
-A static WebXR AR pinata experience using `pinata.glb`.
+A static browser AR pinata experience using WebXR where available and a camera overlay elsewhere.
 
 ## Gameplay
 
 - AR content remains hidden until the user presses `Start AR` and the immersive session is ready.
-- The pinata starts at a random point within a 5 meter radius of the current camera/user spot.
+- In WebXR, the pinata starts at a random point within a 5 meter radius of the current user spot. Camera-overlay placement uses a tighter visible range so the target remains large enough to hit.
 - Hits 1 through 5 play a hit sound, spawn a generous confetti burst, and move the pinata to a new random spot with a jump animation.
 - The pinata keeps doing small jumps and gentle wander moves between hits. Its gaze drifts smoothly within a 60-degree cone toward the user, with an occasional sideways tilt.
 - Hit 6 plays the explosion sound, spawns a large confetti burst, hides the pinata, shows `See you soon little one!`, starts dense confetti rain, and reveals a smiling baby octopus.
@@ -37,48 +37,19 @@ npm start
 
 WebXR AR needs a secure context. `localhost` works for local testing; deployed hosting should use HTTPS. On a WebXR-capable mobile browser, use the AR button to open the camera AR view.
 
-## Native iOS AR
+## Android and iOS modes
 
-Safari on iPhone and iPad does not currently provide the `immersive-ar` session required by the WebXR game. The repository therefore contains a separate native ARKit implementation at:
+The same GitHub Pages link automatically selects the best browser mode:
 
-```text
-ios/ARPinataIOS/ARPinataIOS.xcodeproj
-```
+- Android browsers with WebXR `immersive-ar` support use the full WebXR version.
+- Safari on iPhone and iPad uses the camera-overlay version because Safari does not expose the required immersive WebXR session.
+- Other browsers without immersive WebXR also use the camera overlay when camera access is available.
 
-It implements the same six-hit game with true world tracking, randomized movement, native hit testing, hit and explosion confetti, theme-colored rain, final text, and an animated baby octopus. It is not a camera-overlay fallback.
+Both modes use the same six-hit game, movement, sounds, confetti, final text, theme, and baby octopus. In camera-overlay mode, the 3D scene is composited over the rear camera image and does not have ARKit/WebXR world tracking. No app installation, TestFlight account, or Apple Developer membership is required.
 
-To install it directly on an iPhone or iPad for local testing:
+The pinata and camera remain hidden until the user presses `Start AR`. Camera access requires HTTPS on a phone; GitHub Pages already provides HTTPS.
 
-1. Install the full Xcode application from Apple.
-2. Open `ios/ARPinataIOS/ARPinataIOS.xcodeproj`.
-3. Select the `ARPinataIOS` target and choose your Apple development team under Signing & Capabilities.
-4. Connect the device, enable Developer Mode when prompted, select it as the run destination, and press Run.
-
-The Xcode build reads `FINAL_EFFECT_THEME` from the same repository `.env`. The native app registers the URL scheme `arpinata://start`.
-
-The GitHub Pages frontend detects iOS/iPadOS when WebXR AR is unavailable and routes to the native application instead of starting a camera overlay. `IOS_APP_URL` in `.env` controls that destination.
-
-Keep it empty until an installable native build exists:
-
-```dotenv
-IOS_APP_URL=
-```
-
-After installing directly from Xcode, you can use the registered custom scheme:
-
-```dotenv
-IOS_APP_URL=arpinata://start
-```
-
-For external distribution, publish the app through TestFlight or the App Store and replace `IOS_APP_URL` with the resulting HTTPS link. When the value is empty, the website shows installation guidance and no broken Safari link.
-
-If Xcode is not installed locally, use the manual GitHub workflow **Release native iOS app to TestFlight**. GitHub performs the macOS/Xcode build and upload in the cloud. The one-time Apple signing and GitHub environment setup is documented in [ios/TESTFLIGHT_SETUP.md](ios/TESTFLIGHT_SETUP.md). The native target supports both iPhone and iPad.
-
-The two platform implementations coexist as follows:
-
-- WebXR-capable device: launch the browser AR game directly.
-- iPhone/iPad without WebXR AR: route to the installed native ARKit app.
-- Unsupported non-iOS browser: retain the existing browser fallback behavior.
+The repository still contains the earlier native ARKit prototype under `ios/`, but the deployed website does not redirect to or require it.
 
 To test from a phone through ngrok:
 
