@@ -44,6 +44,8 @@ const cameraFeed = document.querySelector('#camera-feed');
 const finalMessage = document.querySelector('#farewell');
 const resetButton = document.querySelector('#reset-button');
 const statusEl = document.querySelector('#status');
+const iosNativeNotice = document.querySelector('#ios-native-notice');
+const iosAppLink = document.querySelector('#ios-app-link');
 
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
@@ -343,17 +345,47 @@ function makeGroundRing() {
 
 function setupFallbackCameraIfNeeded() {
   if (!navigator.xr || !window.isSecureContext) {
-    startFallbackCamera();
+    if (isIOSDevice()) {
+      showIOSNativeOption();
+    } else {
+      startFallbackCamera();
+    }
     return;
   }
 
   navigator.xr.isSessionSupported('immersive-ar')
     .then((supported) => {
       if (!supported) {
-        startFallbackCamera();
+        if (isIOSDevice()) {
+          showIOSNativeOption();
+        } else {
+          startFallbackCamera();
+        }
       }
     })
-    .catch(() => startFallbackCamera());
+    .catch(() => {
+      if (isIOSDevice()) {
+        showIOSNativeOption();
+      } else {
+        startFallbackCamera();
+      }
+    });
+}
+
+function isIOSDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function showIOSNativeOption() {
+  const appURL = window.AR_PINATA_ENV?.IOS_APP_URL || 'arpinata://start';
+  if (!iosAppLink || !iosNativeNotice) {
+    setStatus('Open the native AR Pinata iOS app on this device.');
+    return;
+  }
+  iosAppLink.href = appURL;
+  iosNativeNotice.classList.add('visible');
+  setStatus('');
 }
 
 async function startFallbackCamera() {

@@ -32,6 +32,18 @@ Scope: hostable web AR app using `pinata.glb`. The expected interaction is:
 - Test on a real target mobile AR device/browser; desktop emulation can only validate fallback rendering and state logic.
 - iOS handheld browsers should be treated as fallback unless `immersive-ar` is confirmed at runtime on the exact target browser/device.
 - Camera permission denied, unavailable AR runtime, unsupported browser, and interrupted session all leave the page recoverable.
+- iPhone/iPad without `immersive-ar` never starts the camera-overlay game and instead shows the native iOS app route.
+
+## Native iOS Checks
+
+- `ios/ARPinataIOS/ARPinataIOS.xcodeproj` builds with the full Xcode application for an iOS 17 or newer target.
+- Xcode generates the native final-effect theme from the same repository `.env` used by the web build.
+- ARKit world tracking begins only after the native `Start AR` action and requests camera permission with a clear purpose string.
+- The pinata is fixed in AR world coordinates while idle and moves between reachable positions in front of the current device pose.
+- Exactly six successful entity hits trigger the final explosion; misses and rapid duplicate taps do not count.
+- The native explosion reveals matching theme-colored text, dense rain, and the animated baby octopus.
+- Reset removes native particle systems and final entities before starting a fresh six-hit round.
+- The `arpinata://start` route launches the installed app from the iOS-specific GitHub Pages prompt.
 
 ## Model And AR Placement
 

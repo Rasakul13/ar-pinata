@@ -37,6 +37,39 @@ npm start
 
 WebXR AR needs a secure context. `localhost` works for local testing; deployed hosting should use HTTPS. On a WebXR-capable mobile browser, use the AR button to open the camera AR view.
 
+## Native iOS AR
+
+Safari on iPhone and iPad does not currently provide the `immersive-ar` session required by the WebXR game. The repository therefore contains a separate native ARKit implementation at:
+
+```text
+ios/ARPinataIOS/ARPinataIOS.xcodeproj
+```
+
+It implements the same six-hit game with true world tracking, randomized movement, native hit testing, hit and explosion confetti, theme-colored rain, final text, and an animated baby octopus. It is not a camera-overlay fallback.
+
+To install it on an iPhone or iPad for testing:
+
+1. Install the full Xcode application from Apple.
+2. Open `ios/ARPinataIOS/ARPinataIOS.xcodeproj`.
+3. Select the `ARPinataIOS` target and choose your Apple development team under Signing & Capabilities.
+4. Connect the device, enable Developer Mode when prompted, select it as the run destination, and press Run.
+
+The Xcode build reads `FINAL_EFFECT_THEME` from the same repository `.env`. The native app registers the URL scheme `arpinata://start`.
+
+The GitHub Pages frontend detects iOS/iPadOS when WebXR AR is unavailable and shows `Open iOS AR` instead of starting a camera overlay. `IOS_APP_URL` in `.env` controls that destination:
+
+```dotenv
+IOS_APP_URL=arpinata://start
+```
+
+The custom URL works after the native app is installed. For external distribution, publish the app through TestFlight or the App Store and replace `IOS_APP_URL` with the final Universal Link or store destination.
+
+The two platform implementations coexist as follows:
+
+- WebXR-capable device: launch the browser AR game directly.
+- iPhone/iPad without WebXR AR: route to the installed native ARKit app.
+- Unsupported non-iOS browser: retain the existing browser fallback behavior.
+
 To test from a phone through ngrok:
 
 ```sh

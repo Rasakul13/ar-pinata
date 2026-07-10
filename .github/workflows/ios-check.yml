@@ -1,0 +1,27 @@
+name: Check native iOS app
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Compile iOS app for Simulator
+        run: >-
+          xcodebuild
+          -project ios/ARPinataIOS/ARPinataIOS.xcodeproj
+          -scheme ARPinataIOS
+          -configuration Debug
+          -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build

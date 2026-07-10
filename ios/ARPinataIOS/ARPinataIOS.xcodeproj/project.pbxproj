@@ -1,0 +1,267 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000101 /* ARPinataIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000201 /* ARPinataIOSApp.swift */; };
+		100000000000000000000102 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000202 /* ContentView.swift */; };
+		100000000000000000000103 /* ARGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000203 /* ARGameView.swift */; };
+		100000000000000000000104 /* ARGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000204 /* ARGameController.swift */; };
+		100000000000000000000105 /* FinalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000205 /* FinalTheme.swift */; };
+		100000000000000000000106 /* BuildTheme.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000206 /* BuildTheme.generated.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		100000000000000000000200 /* ARPinataIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARPinataIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000201 /* ARPinataIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARPinataIOSApp.swift; sourceTree = "<group>"; };
+		100000000000000000000202 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		100000000000000000000203 /* ARGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGameView.swift; sourceTree = "<group>"; };
+		100000000000000000000204 /* ARGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGameController.swift; sourceTree = "<group>"; };
+		100000000000000000000205 /* FinalTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalTheme.swift; sourceTree = "<group>"; };
+		100000000000000000000206 /* BuildTheme.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildTheme.generated.swift; sourceTree = "<group>"; };
+		100000000000000000000207 /* generate-theme.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-theme.sh"; sourceTree = "<group>"; };
+		100000000000000000000208 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		100000000000000000000301 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		100000000000000000000401 = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000402 /* ARPinataIOS */,
+				100000000000000000000207 /* generate-theme.sh */,
+				100000000000000000000403 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		100000000000000000000402 /* ARPinataIOS */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000201 /* ARPinataIOSApp.swift */,
+				100000000000000000000202 /* ContentView.swift */,
+				100000000000000000000203 /* ARGameView.swift */,
+				100000000000000000000204 /* ARGameController.swift */,
+				100000000000000000000205 /* FinalTheme.swift */,
+				100000000000000000000206 /* BuildTheme.generated.swift */,
+				100000000000000000000208 /* Info.plist */,
+			);
+			path = ARPinataIOS;
+			sourceTree = "<group>";
+		};
+		100000000000000000000403 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000200 /* ARPinataIOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		100000000000000000000501 /* ARPinataIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000801 /* Build configuration list for PBXNativeTarget "ARPinataIOS" */;
+			buildPhases = (
+				100000000000000000000304 /* Generate theme */,
+				100000000000000000000302 /* Sources */,
+				100000000000000000000301 /* Frameworks */,
+				100000000000000000000303 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ARPinataIOS;
+			productName = ARPinataIOS;
+			productReference = 100000000000000000000200 /* ARPinataIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		100000000000000000000601 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					100000000000000000000501 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 100000000000000000000802 /* Build configuration list for PBXProject "ARPinataIOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 100000000000000000000401;
+			productRefGroup = 100000000000000000000403 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				100000000000000000000501 /* ARPinataIOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		100000000000000000000303 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		100000000000000000000304 /* Generate theme */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../../.env",
+				"$(SRCROOT)/generate-theme.sh",
+			);
+			name = "Generate theme";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/ARPinataIOS/BuildTheme.generated.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"${SRCROOT}/generate-theme.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		100000000000000000000302 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000101 /* ARPinataIOSApp.swift in Sources */,
+				100000000000000000000102 /* ContentView.swift in Sources */,
+				100000000000000000000103 /* ARGameView.swift in Sources */,
+				100000000000000000000104 /* ARGameController.swift in Sources */,
+				100000000000000000000105 /* FinalTheme.swift in Sources */,
+				100000000000000000000106 /* BuildTheme.generated.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		100000000000000000000701 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ARPinataIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rasakul.ARPinataIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000702 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ARPinataIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rasakul.ARPinataIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		100000000000000000000703 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		100000000000000000000704 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		100000000000000000000801 /* Build configuration list for PBXNativeTarget "ARPinataIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000701 /* Debug */,
+				100000000000000000000702 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000802 /* Build configuration list for PBXProject "ARPinataIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000703 /* Debug */,
+				100000000000000000000704 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 100000000000000000000601 /* Project object */;
+}

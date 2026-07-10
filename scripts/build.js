@@ -7,6 +7,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(projectRoot, 'dist');
 const env = readEnvFile(join(projectRoot, '.env'));
 const theme = (env.FINAL_EFFECT_THEME ?? '').trim().toLowerCase();
+const iosAppURL = (env.IOS_APP_URL ?? 'arpinata://start').trim();
 
 if (!['blue', 'pink'].includes(theme)) {
   throw new Error('FINAL_EFFECT_THEME in .env must be either "blue" or "pink".');
@@ -18,6 +19,7 @@ const sourceOctopus = readFileSync(join(projectRoot, 'src/baby-octopus.js'), 'ut
 const sourceStyles = readFileSync(join(projectRoot, 'styles.css'), 'utf8');
 const buildId = createHash('sha256')
   .update(theme)
+  .update(iosAppURL)
   .update(sourceMain)
   .update(sourceOctopus)
   .update(sourceStyles)
@@ -48,7 +50,10 @@ if (builtIndex === sourceIndex) {
 writeFileSync(join(distDir, 'index.html'), builtIndex);
 writeFileSync(
   join(distDir, configFileName),
-  `window.AR_PINATA_ENV = Object.freeze({ FINAL_EFFECT_THEME: '${theme}' });\n`,
+  `window.AR_PINATA_ENV = Object.freeze(${JSON.stringify({
+    FINAL_EFFECT_THEME: theme,
+    IOS_APP_URL: iosAppURL,
+  })});\n`,
 );
 
 console.log(`Built AR Pinata with theme "${theme}" (${buildId}).`);

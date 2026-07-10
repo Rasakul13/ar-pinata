@@ -70,6 +70,54 @@ body.fallback-camera #camera-feed {
   background: transparent;
 }
 
+#ios-native-notice {
+  position: fixed;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+  display: none;
+  width: min(86vw, 420px);
+  transform: translate(-50%, -50%);
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--final-effect-color) 58%, transparent);
+  border-radius: 14px;
+  background: rgba(7, 12, 18, 0.9);
+  color: #f5f8fb;
+  text-align: center;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48);
+}
+
+#ios-native-notice.visible {
+  display: block;
+}
+
+#ios-native-notice h1 {
+  margin: 0 0 10px;
+  color: var(--final-effect-color);
+  font-size: clamp(24px, 7vw, 36px);
+}
+
+#ios-native-notice p {
+  margin: 0 0 20px;
+  color: #eaf7ff;
+  line-height: 1.45;
+}
+
+#ios-app-link {
+  display: inline-flex;
+  min-width: 150px;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--final-effect-color);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--final-effect-color) 22%, rgba(7, 12, 18, 0.9));
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 0 18px var(--final-effect-glow);
+}
+
 #status {
   position: fixed;
   z-index: 5;
