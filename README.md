@@ -56,13 +56,21 @@ To install it on an iPhone or iPad for testing:
 
 The Xcode build reads `FINAL_EFFECT_THEME` from the same repository `.env`. The native app registers the URL scheme `arpinata://start`.
 
-The GitHub Pages frontend detects iOS/iPadOS when WebXR AR is unavailable and shows `Open iOS AR` instead of starting a camera overlay. `IOS_APP_URL` in `.env` controls that destination:
+The GitHub Pages frontend detects iOS/iPadOS when WebXR AR is unavailable and routes to the native application instead of starting a camera overlay. `IOS_APP_URL` in `.env` controls that destination.
+
+Keep it empty until an installable native build exists:
+
+```dotenv
+IOS_APP_URL=
+```
+
+After installing directly from Xcode, you can use the registered custom scheme:
 
 ```dotenv
 IOS_APP_URL=arpinata://start
 ```
 
-The custom URL works after the native app is installed. For external distribution, publish the app through TestFlight or the App Store and replace `IOS_APP_URL` with the final Universal Link or store destination.
+For external distribution, publish the app through TestFlight or the App Store and replace `IOS_APP_URL` with the resulting HTTPS link. When the value is empty, the website shows installation guidance and no broken Safari link.
 
 The two platform implementations coexist as follows:
 

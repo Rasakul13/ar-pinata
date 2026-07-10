@@ -118,6 +118,15 @@ body.fallback-camera #camera-feed {
   box-shadow: 0 0 18px var(--final-effect-glow);
 }
 
+#ios-app-link[hidden] {
+  display: none;
+}
+
+#ios-app-help {
+  font-size: 14px;
+  opacity: 0.78;
+}
+
 #status {
   position: fixed;
   z-index: 5;

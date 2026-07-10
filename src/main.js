@@ -46,6 +46,7 @@ const resetButton = document.querySelector('#reset-button');
 const statusEl = document.querySelector('#status');
 const iosNativeNotice = document.querySelector('#ios-native-notice');
 const iosAppLink = document.querySelector('#ios-app-link');
+const iosAppHelp = document.querySelector('#ios-app-help');
 
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
@@ -378,12 +379,30 @@ function isIOSDevice() {
 }
 
 function showIOSNativeOption() {
-  const appURL = window.AR_PINATA_ENV?.IOS_APP_URL || 'arpinata://start';
+  const configuredURL = window.AR_PINATA_ENV?.IOS_APP_URL;
+  const appURL = typeof configuredURL === 'string' ? configuredURL.trim() : '';
   if (!iosAppLink || !iosNativeNotice) {
     setStatus('Open the native AR Pinata iOS app on this device.');
     return;
   }
-  iosAppLink.href = appURL;
+
+  if (appURL) {
+    iosAppLink.href = appURL;
+    iosAppLink.hidden = false;
+    iosAppLink.textContent = appURL.startsWith('https://testflight.apple.com/')
+      ? 'iOS AR über TestFlight installieren'
+      : 'iOS AR öffnen';
+    if (iosAppHelp) {
+      iosAppHelp.hidden = true;
+    }
+  } else {
+    iosAppLink.removeAttribute('href');
+    iosAppLink.hidden = true;
+    if (iosAppHelp) {
+      iosAppHelp.hidden = false;
+    }
+  }
+
   iosNativeNotice.classList.add('visible');
   setStatus('');
 }

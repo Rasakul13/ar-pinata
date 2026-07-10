@@ -7,7 +7,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(projectRoot, 'dist');
 const env = readEnvFile(join(projectRoot, '.env'));
 const theme = (env.FINAL_EFFECT_THEME ?? '').trim().toLowerCase();
-const iosAppURL = (env.IOS_APP_URL ?? 'arpinata://start').trim();
+const iosAppURL = (env.IOS_APP_URL ?? '').trim();
 
 if (!['blue', 'pink'].includes(theme)) {
   throw new Error('FINAL_EFFECT_THEME in .env must be either "blue" or "pink".');
