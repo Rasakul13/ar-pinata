@@ -9,12 +9,14 @@ if (!siteURL || !expectedBuildId || !expectedCommit || !expectedTheme || !expect
 const expectedHits = Number(expectedHitsRaw);
 const attempts = Number(process.env.DEPLOY_VERIFY_ATTEMPTS ?? 18);
 const delayMs = Number(process.env.DEPLOY_VERIFY_DELAY_MS ?? 10000);
+const requiredStableMatches = Number(process.env.DEPLOY_VERIFY_STABLE_MATCHES ?? 3);
 const baseURL = siteURL.endsWith('/') ? siteURL : `${siteURL}/`;
 const versionURL = new URL('version.json', baseURL);
 versionURL.searchParams.set('build', expectedBuildId);
 versionURL.searchParams.set('commit', expectedCommit);
 
 let lastResult = 'No response received.';
+let stableMatches = 0;
 
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
   try {
@@ -26,6 +28,7 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
     });
 
     if (!response.ok) {
+      stableMatches = 0;
       lastResult = `HTTP ${response.status} from ${versionURL}`;
     } else {
       const live = await response.json();
@@ -35,20 +38,27 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
         && live.hitsToExplode === expectedHits;
 
       if (matches) {
-        console.log(
-          `Verified live build ${live.buildId}: theme=${live.theme}, hits=${live.hitsToExplode}, commit=${live.commit}.`,
-        );
-        process.exit(0);
-      }
+        stableMatches += 1;
+        lastResult = `Matching build observed ${stableMatches}/${requiredStableMatches} times.`;
 
-      lastResult = `Expected ${JSON.stringify({
-        buildId: expectedBuildId,
-        commit: expectedCommit,
-        theme: expectedTheme,
-        hitsToExplode: expectedHits,
-      })}, received ${JSON.stringify(live)}.`;
+        if (stableMatches >= requiredStableMatches) {
+          console.log(
+            `Verified stable live build ${live.buildId}: theme=${live.theme}, hits=${live.hitsToExplode}, commit=${live.commit}.`,
+          );
+          process.exit(0);
+        }
+      } else {
+        stableMatches = 0;
+        lastResult = `Expected ${JSON.stringify({
+          buildId: expectedBuildId,
+          commit: expectedCommit,
+          theme: expectedTheme,
+          hitsToExplode: expectedHits,
+        })}, received ${JSON.stringify(live)}.`;
+      }
     }
   } catch (error) {
+    stableMatches = 0;
     lastResult = error instanceof Error ? error.message : String(error);
   }
 

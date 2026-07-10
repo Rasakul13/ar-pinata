@@ -34,7 +34,7 @@ The `Deploy GitHub Pages` workflow is the only publishing path. On every push to
 1. deletes and recreates `dist/` from the committed sources and `.env`;
 2. versions the JavaScript, CSS, octopus import, model, and theme configuration with one build ID;
 3. publishes only the generated `dist/` artifact;
-4. checks the live `version.json` until build ID, commit, theme, and required hit count exactly match the pushed build.
+4. checks the live `version.json` repeatedly until build ID, commit, theme, and required hit count stably match the pushed build.
 
 Configure the repository once under **Settings > Pages > Build and deployment > Source** and select **GitHub Actions**. Publishing directly from the `main` branch is intentionally unsupported because a branch deployment cannot evaluate `.env` through the build script.
 
