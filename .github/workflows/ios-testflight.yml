@@ -1,0 +1,125 @@
+name: Release native iOS app to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: What should testers know about this build?
+        required: false
+        default: New AR Pinata build
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  release-ios:
+    name: Build, sign, and upload
+    runs-on: macos-latest
+    environment: ios-release
+    env:
+      APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+      IOS_PROVISIONING_PROFILE_NAME: ${{ vars.IOS_PROVISIONING_PROFILE_NAME }}
+      APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+      APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      APPSTORE_CERTIFICATES_FILE_BASE64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
+      APPSTORE_CERTIFICATES_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check release configuration
+        shell: bash
+        run: |
+          missing=0
+          for name in \
+            APPLE_TEAM_ID \
+            IOS_BUNDLE_ID \
+            IOS_PROVISIONING_PROFILE_NAME \
+            APPSTORE_API_KEY_ID \
+            APPSTORE_ISSUER_ID \
+            APPSTORE_API_PRIVATE_KEY \
+            APPSTORE_CERTIFICATES_FILE_BASE64 \
+            APPSTORE_CERTIFICATES_PASSWORD
+          do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::$name is not configured in the ios-release environment."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Import Apple distribution certificate
+        uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
+          p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
+
+      - name: Download App Store provisioning profile
+        uses: apple-actions/download-provisioning-profiles@v6
+        with:
+          bundle-id: ${{ vars.IOS_BUNDLE_ID }}
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Archive native iOS app
+        shell: bash
+        run: |
+          xcodebuild \
+            -project ios/ARPinataIOS/ARPinataIOS.xcodeproj \
+            -scheme ARPinataIOS \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/ARPinataIOS.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$IOS_BUNDLE_ID" \
+            CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY='Apple Distribution' \
+            PROVISIONING_PROFILE_SPECIFIER="$IOS_PROVISIONING_PROFILE_NAME" \
+            archive
+
+      - name: Create App Store export configuration
+        shell: bash
+        run: |
+          export_options="$RUNNER_TEMP/ExportOptions.plist"
+          plutil -create xml1 "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :destination string export' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :signingCertificate string Apple Distribution' "$export_options"
+          /usr/libexec/PlistBuddy -c "Add :teamID string $APPLE_TEAM_ID" "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :stripSwiftSymbols bool true' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :uploadSymbols bool true' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :manageAppVersionAndBuildNumber bool false' "$export_options"
+          /usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$export_options"
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:$IOS_BUNDLE_ID string $IOS_PROVISIONING_PROFILE_NAME" "$export_options"
+
+      - name: Export signed IPA
+        shell: bash
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$RUNNER_TEMP/ARPinataIOS.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ARPinataIOS-export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Upload build to TestFlight
+        uses: apple-actions/upload-testflight-build@v5
+        with:
+          app-path: ${{ runner.temp }}/ARPinataIOS-export/ARPinataIOS.ipa
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          release-notes: ${{ inputs.release_notes }}
+          uses-non-exempt-encryption: "false"
+          wait-for-processing: "true"
+

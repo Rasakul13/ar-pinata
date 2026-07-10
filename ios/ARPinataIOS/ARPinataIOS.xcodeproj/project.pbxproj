@@ -13,6 +13,7 @@
 		100000000000000000000104 /* ARGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000204 /* ARGameController.swift */; };
 		100000000000000000000105 /* FinalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000205 /* FinalTheme.swift */; };
 		100000000000000000000106 /* BuildTheme.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000206 /* BuildTheme.generated.swift */; };
+		100000000000000000000107 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000209 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		100000000000000000000206 /* BuildTheme.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildTheme.generated.swift; sourceTree = "<group>"; };
 		100000000000000000000207 /* generate-theme.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-theme.sh"; sourceTree = "<group>"; };
 		100000000000000000000208 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100000000000000000000209 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 				100000000000000000000205 /* FinalTheme.swift */,
 				100000000000000000000206 /* BuildTheme.generated.swift */,
 				100000000000000000000208 /* Info.plist */,
+				100000000000000000000209 /* Assets.xcassets */,
 			);
 			path = ARPinataIOS;
 			sourceTree = "<group>";
@@ -128,6 +131,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				100000000000000000000107 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +181,7 @@
 		100000000000000000000701 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -196,6 +201,7 @@
 		100000000000000000000702 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";

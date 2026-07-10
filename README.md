@@ -47,7 +47,7 @@ ios/ARPinataIOS/ARPinataIOS.xcodeproj
 
 It implements the same six-hit game with true world tracking, randomized movement, native hit testing, hit and explosion confetti, theme-colored rain, final text, and an animated baby octopus. It is not a camera-overlay fallback.
 
-To install it on an iPhone or iPad for testing:
+To install it directly on an iPhone or iPad for local testing:
 
 1. Install the full Xcode application from Apple.
 2. Open `ios/ARPinataIOS/ARPinataIOS.xcodeproj`.
@@ -71,6 +71,8 @@ IOS_APP_URL=arpinata://start
 ```
 
 For external distribution, publish the app through TestFlight or the App Store and replace `IOS_APP_URL` with the resulting HTTPS link. When the value is empty, the website shows installation guidance and no broken Safari link.
+
+If Xcode is not installed locally, use the manual GitHub workflow **Release native iOS app to TestFlight**. GitHub performs the macOS/Xcode build and upload in the cloud. The one-time Apple signing and GitHub environment setup is documented in [ios/TESTFLIGHT_SETUP.md](ios/TESTFLIGHT_SETUP.md). The native target supports both iPhone and iPad.
 
 The two platform implementations coexist as follows:
 
