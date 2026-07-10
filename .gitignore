@@ -1,0 +1,5 @@
+# Generated production build
+dist/
+
+# macOS metadata
+.DS_Store
